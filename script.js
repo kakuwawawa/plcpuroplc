@@ -1,164 +1,117 @@
 let contactCount = 0;
 let outputCount = 0;
+let ladderState = [];
 
-// A接点の追加
 document.getElementById('addAContact').addEventListener('click', function() {
-    contactCount++;
-    const connectionType = document.getElementById('connectionType').value;
-
-    const newContact = createContactElement(`A接点${contactCount}`, 'a-contact', toggleAContact);
-
-    if (connectionType === 'series') {
-        addSeriesContact(newContact);
-    } else {
-        addParallelContact(newContact);
-    }
+    addContact('A接点', 'a-contact', toggleAContact);
 });
 
-// B接点の追加
 document.getElementById('addBContact').addEventListener('click', function() {
-    contactCount++;
-    const connectionType = document.getElementById('connectionType').value;
-
-    const newContact = createContactElement(`B接点${contactCount}`, 'b-contact', toggleBContact);
-
-    if (connectionType === 'series') {
-        addSeriesContact(newContact);
-    } else {
-        addParallelContact(newContact);
-    }
+    addContact('B接点', 'b-contact', toggleBContact);
 });
 
-// 出力のA接点追加
-document.getElementById('addOutputAContact').addEventListener('click', function() {
-    outputCount++;
-    const connectionType = document.getElementById('connectionType').value;
-
-    const newOutputA = createOutputContactElement(`出力A接点${outputCount}`, 'a-contact', 'off');
-
-    if (connectionType === 'series') {
-        addSeriesContact(newOutputA);
-    } else {
-        addParallelContact(newOutputA);
-    }
-});
-
-// 出力のB接点追加
-document.getElementById('addOutputBContact').addEventListener('click', function() {
-    outputCount++;
-    const connectionType = document.getElementById('connectionType').value;
-
-    const newOutputB = createOutputContactElement(`出力B接点${outputCount}`, 'b-contact', 'on');
-
-    if (connectionType === 'series') {
-        addSeriesContact(newOutputB);
-    } else {
-        addParallelContact(newOutputB);
-    }
-});
-
-// 出力の追加
 document.getElementById('addOutput').addEventListener('click', function() {
     outputCount++;
-    const rungContainer = document.getElementById('rungContainer');
-    const rungs = rungContainer.getElementsByClassName('rung');
-    
-    if (rungs.length > 0) {
-        const lastRung = rungs[rungs.length - 1];
-        const outputElement = document.createElement('span');
-        outputElement.classList.add('output', 'off');
-        outputElement.textContent = `出力${outputCount}`;
-
-        lastRung.appendChild(outputElement);
-    }
-});
-
-// 要素の削除
-document.getElementById('removeElement').addEventListener('click', function() {
-    const rungContainer = document.getElementById('rungContainer');
-    const rungs = rungContainer.getElementsByClassName('rung');
-    
-    if (rungs.length > 0) {
-        rungContainer.removeChild(rungs[rungs.length - 1]);
-    }
-});
-
-// A接点の切り替え
-function toggleAContact(event) {
-    const outputElement = event.target.closest('.rung').querySelector('.output');
-    if (outputElement) {
-        toggleOutput(outputElement, 'a-contact');
-    }
-}
-
-// B接点の切り替え
-function toggleBContact(event) {
-    const outputElement = event.target.closest('.rung').querySelector('.output');
-    if (outputElement) {
-        toggleOutput(outputElement, 'b-contact');
-    }
-}
-
-// 出力のON/OFF切り替え
-function toggleOutput(outputElement, contactType) {
-    if (outputElement.classList.contains('off')) {
-        outputElement.classList.remove('off');
-        outputElement.classList.add('on');
-        outputElement.textContent = outputElement.textContent.replace('OFF', 'ON');
-    } else {
-        outputElement.classList.remove('on');
-        outputElement.classList.add('off');
-        outputElement.textContent = outputElement.textContent.replace('ON', 'OFF');
-    }
-}
-
-// 接点を作成する関数
-function createContactElement(text, className, toggleFunction) {
-    const newRung = document.createElement('div');
-    newRung.classList.add('rung');
-
-    const contactElement = document.createElement('button');
-    contactElement.classList.add(className);
-    contactElement.textContent = text;
-    contactElement.addEventListener('click', toggleFunction);
-
-    const lineElement = document.createElement('span');
-    lineElement.classList.add('line');
-
-    newRung.appendChild(contactElement);
-    newRung.appendChild(lineElement);
-
-    return newRung;
-}
-
-// 出力接点を作成する関数
-function createOutputContactElement(text, className, state) {
     const newRung = document.createElement('div');
     newRung.classList.add('rung');
 
     const outputElement = document.createElement('span');
-    outputElement.classList.add('output', state);
-    outputElement.textContent = text;
+    outputElement.classList.add('output', 'off');
+    outputElement.textContent = `出力コイル${outputCount}`;
+    outputElement.setAttribute('data-state', 'off');
 
     newRung.appendChild(outputElement);
+    document.getElementById('rungContainer').appendChild(newRung);
 
-    return newRung;
+    ladderState.push({
+        type: 'output',
+        id: outputCount,
+        state: 'off'
+    });
+});
+
+document.getElementById('simulate').addEventListener('click', function() {
+    simulateLadder();
+});
+
+document.getElementById('reset').addEventListener('click', function() {
+    resetLadder();
+});
+
+function addContact(type, className, toggleFunction) {
+    contactCount++;
+    const newRung = document.createElement('div');
+    newRung.classList.add('rung');
+
+    const contactElement = document.createElement('span');
+    contactElement.classList.add(className, 'contact');
+    contactElement.textContent = `${type}${contactCount}`;
+    contactElement.setAttribute('data-state', 'off');
+    contactElement.addEventListener('click', toggleFunction);
+
+    newRung.appendChild(contactElement);
+    document.getElementById('rungContainer').appendChild(newRung);
+
+    ladderState.push({
+        type: type === 'A接点' ? 'a-contact' : 'b-contact',
+        id: contactCount,
+        state: 'off'
+    });
 }
 
-// 直列に接点を追加
-function addSeriesContact(newRung) {
-    const rungContainer = document.getElementById('rungContainer');
-    rungContainer.appendChild(newRung);
+function toggleAContact(event) {
+    toggleContact(event.target, 'a-contact');
 }
 
-// 並列に接点を追加
-function addParallelContact(newRung) {
-    const rungContainer = document.getElementById('rungContainer');
-    const parallelContainer = document.createElement('div');
-    parallelContainer.classList.add('rung');
-    parallelContainer.style.display = 'flex';
-    parallelContainer.style.flexDirection = 'column';
+function toggleBContact(event) {
+    toggleContact(event.target, 'b-contact');
+}
 
-    parallelContainer.appendChild(newRung);
-    rungContainer.appendChild(parallelContainer);
+function toggleContact(contactElement, type) {
+    const currentState = contactElement.getAttribute('data-state');
+    const newState = currentState === 'off' ? 'on' : 'off';
+    contactElement.setAttribute('data-state', newState);
+    contactElement.classList.toggle('on', newState === 'on');
+
+    // 更新するラダー状態
+    const index = ladderState.findIndex(item => item.type === type && item.id === parseInt(contactElement.textContent.replace(type === 'a-contact' ? 'A接点' : 'B接点', '')));
+    if (index !== -1) {
+        ladderState[index].state = newState;
+    }
+}
+
+function simulateLadder() {
+    let output = true;
+
+    // 各接点の状態を確認
+    ladderState.forEach(element => {
+        if (element.type === 'a-contact' && element.state === 'off') {
+            output = false; // A接点が開いている場合
+        }
+        if (element.type === 'b-contact' && element.state === 'on') {
+            output = false; // B接点が閉じている場合
+        }
+    });
+
+    // 出力コイルの状態を更新
+    const outputElement = document.querySelector('.output');
+    if (output && outputElement) {
+        outputElement.classList.add('on');
+        outputElement.textContent = '出力コイルON';
+        outputElement.setAttribute('data-state', 'on');
+        document.getElementById('simulationOutput').textContent = '出力がONになりました！';
+    } else if (outputElement) {
+        outputElement.classList.remove('on');
+        outputElement.textContent = '出力コイルOFF';
+        outputElement.setAttribute('data-state', 'off');
+        document.getElementById('simulationOutput').textContent = '出力がOFFになりました。';
+    }
+}
+
+function resetLadder() {
+    document.getElementById('rungContainer').innerHTML = '';
+    document.getElementById('simulationOutput').textContent = '';
+    ladderState = [];
+    contactCount = 0;
+    outputCount = 0;
 }
