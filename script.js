@@ -1,64 +1,73 @@
-let switchCount = 0;
-let outputCount = 0;
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+}
 
-// スイッチの追加
-document.getElementById('addSwitch').addEventListener('click', function() {
-    switchCount++;
-    const rungContainer = document.getElementById('rungContainer');
-    const newRung = document.createElement('div');
-    newRung.classList.add('rung');
-    
-    const switchElement = document.createElement('button');
-    switchElement.classList.add('switch');
-    switchElement.textContent = `スイッチ${switchCount}`;
-    switchElement.addEventListener('click', toggleSwitch);
+.ladder-diagram {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-top: 50px;
+}
 
-    const lineElement = document.createElement('span');
-    lineElement.classList.add('line');
+.rail {
+    width: 10px;
+    height: 100%;
+    background-color: black;
+}
 
-    newRung.appendChild(switchElement);
-    newRung.appendChild(lineElement);
-    rungContainer.appendChild(newRung);
-});
+.rail-left {
+    margin-right: 10px;
+}
 
-// 出力の追加
-document.getElementById('addOutput').addEventListener('click', function() {
-    outputCount++;
-    const rungContainer = document.getElementById('rungContainer');
-    const rungs = rungContainer.getElementsByClassName('rung');
-    
-    if (rungs.length > 0) {
-        const lastRung = rungs[rungs.length - 1];
-        const outputElement = document.createElement('span');
-        outputElement.classList.add('output', 'off');
-        outputElement.textContent = `出力${outputCount}`;
+.rail-right {
+    margin-left: 10px;
+}
 
-        lastRung.appendChild(outputElement);
-    }
-});
+.rung {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
 
-// 要素の削除
-document.getElementById('removeElement').addEventListener('click', function() {
-    const rungContainer = document.getElementById('rungContainer');
-    const rungs = rungContainer.getElementsByClassName('rung');
-    
-    if (rungs.length > 0) {
-        rungContainer.removeChild(rungs[rungs.length - 1]);
-    }
-});
+.switch, .output {
+    width: 80px;
+    height: 40px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 0 10px;
+}
 
-// スイッチのオン/オフ切り替え
-function toggleSwitch(event) {
-    const outputElement = event.target.nextElementSibling.nextElementSibling;
-    if (outputElement && outputElement.classList.contains('output')) {
-        if (outputElement.classList.contains('off')) {
-            outputElement.classList.remove('off');
-            outputElement.classList.add('on');
-            outputElement.textContent = outputElement.textContent.replace('OFF', 'ON');
-        } else {
-            outputElement.classList.remove('on');
-            outputElement.classList.add('off');
-            outputElement.textContent = outputElement.textContent.replace('ON', 'OFF');
-        }
-    }
+.a-contact {
+    background-color: lightblue;
+}
+
+.b-contact {
+    background-color: lightcoral;
+}
+
+.output {
+    border: 1px solid black;
+    background-color: lightgray;
+}
+
+.output.on {
+    background-color: lightgreen;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+button {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+select {
+    margin-left: 10px;
+    padding: 5px;
 }
