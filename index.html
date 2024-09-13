@@ -15,9 +15,52 @@
     </div>
 
     <div class="controls">
-        <button id="addSwitch">スイッチを追加</button>
+        <button id="addAContact">A接点を追加</button>
+        <button id="addBContact">B接点を追加</button>
+        <button id="addOutputAContact">出力のA接点を追加</button>
+        <button id="addOutputBContact">出力のB接点を追加</button>
         <button id="addOutput">出力を追加</button>
         <button id="removeElement">要素を削除</button>
+        <br><br>
+        <label>接続タイプ:</label>
+        <select id="connectionType">
+            <option value="series">直列</option>
+            <option value="parallel">並列</option>
+        </select>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ラダー図エディタ</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>ラダー図エディタ</h1>
+    <div id="ladderContainer" class="ladder-diagram">
+        <div class="rail rail-left"></div>
+        <div id="rungContainer"></div>
+        <div class="rail rail-right"></div>
+    </div>
+
+    <div class="controls">
+        <button id="addAContact">A接点を追加</button>
+        <button id="addBContact">B接点を追加</button>
+        <button id="addOutputAContact">出力のA接点を追加</button>
+        <button id="addOutputBContact">出力のB接点を追加</button>
+        <button id="addOutput">出力を追加</button>
+        <button id="removeElement">要素を削除</button>
+        <br><br>
+        <label>接続タイプ:</label>
+        <select id="connectionType">
+            <option value="series">直列</option>
+            <option value="parallel">並列</option>
+        </select>
     </div>
 
     <script src="script.js"></script>
